@@ -6,14 +6,37 @@ import winsound
 from datetime import datetime
 from playsound import playsound
 import threading
-
+import sys
+from pathlib import Path
 
 # === CONFIG ===
-BASE_FOLDER = r"D:\Wassel\Reports\Monthly_Report"
+PROJECT_ROOT = Path(r"W:\VC_project\AI_test")
+HOME = Path.home()
+DOCUMENTS = HOME / "Documents"
+
+
+#BASE_FOLDER = r"D:\Wassel\Reports\Monthly_Report"
+#BASE_FOLDER = PROJECT_ROOT / "Reports" / "Monthly_Report"
+BASE_FOLDER = DOCUMENTS / "Reports" / "Monthly_Report"
+BASE_FOLDER.mkdir(parents=True, exist_ok=True)
+
 MODEL_NAME = "mistral"
-CUSTOM_SOUND = r"D:\VC_project\AI_test\among-us-roundstart.mp3"
+
+#CUSTOM_SOUND = r"D:\VC_project\AI_test\among-us-roundstart.mp3"
+CUSTOM_SOUND = PROJECT_ROOT / "among-us-roundstart.mp3"
+
 # Example:
 # CUSTOM_SOUND = r"C:\path\to\sound.wav"
+
+# === Parse optional --date argument ===
+selected_date = None
+if len(sys.argv) > 2 and sys.argv[1] == "--date":
+    try:
+        selected_date = datetime.strptime(sys.argv[2], "%Y-%m-%d").date()
+    except Exception:
+        selected_date = datetime.today().date()
+else:
+    selected_date = datetime.today().date()
 
 # === Run Ollama to summarize + detect status ===
 def analyze_tasks(user_text):
@@ -76,12 +99,12 @@ def show_preview_window(summary_text):
 
 # === Save final summary ===
 def save_summary(final_text):
-    today = datetime.today().date()
-    folder_name = f"{today.year}_{today.month:02d}"
+    # Use selected_date instead of today
+    folder_name = f"{selected_date.year}_{selected_date.month:02d}"
     folder_path = os.path.join(BASE_FOLDER, folder_name)
     os.makedirs(folder_path, exist_ok=True)
 
-    file_name = f"{today}.txt"
+    file_name = f"{selected_date}.txt"
     file_path = os.path.join(folder_path, file_name)
 
     with open(file_path, "w", encoding="utf-8") as f:
@@ -92,19 +115,19 @@ def save_summary(final_text):
 
 # === Play sound when the app opens ===
 def play_startup_sound():
-    if CUSTOM_SOUND and os.path.exists(CUSTOM_SOUND):
-        threading.Thread(target=playsound, args=(CUSTOM_SOUND,), daemon=True).start()
+    if CUSTOM_SOUND.exists():
+        threading.Thread(target=playsound, args=(str(CUSTOM_SOUND),), daemon=True).start()
     else:
         winsound.MessageBeep(winsound.MB_ICONEXCLAMATION)
 
 # === GUI layout ===
 root = tk.Tk()
-root.title("Daily Task Entry")
+root.title(f"Daily Task Entry - {selected_date}")
 
 # Play sound right when app starts
 play_startup_sound()
 
-label = tk.Label(root, text="What did you do today? (List or paragraph is fine)")
+label = tk.Label(root, text=f"What did you do on {selected_date}? (List or paragraph is fine)")
 label.pack(padx=10, pady=10)
 
 text_entry = tk.Text(root, width=60, height=15)

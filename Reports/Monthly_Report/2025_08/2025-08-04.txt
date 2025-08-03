@@ -1,0 +1,8 @@
+- Task: Complete VPN tunnel between Becom and Libyana
+  Status: Completed
+
+- Task: Complete DNS record for the test environment for Fawtara project
+  Status: Completed
+
+- Task: Complete DNS record for Libyana to handle DNS on VPN tunnel
+  Status: Completed

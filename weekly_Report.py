@@ -1,20 +1,23 @@
 import os
 import re
-import pandas as pd
+#import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import Font, PatternFill
 from datetime import datetime, timedelta
 from openpyxl.styles import Alignment, Font, PatternFill
-
+from pathlib import Path
 # === CONFIG ===
-TEMPLATE_PATH = r"D:\VC_project\AI_test\Template.xlsx"
-OUTPUT_PATH = r"D:\Wassel\Reports\Monthly_Report"
+
+PROJECT_ROOT = Path(r"W:\VC_project\AI_test")
+
+TEMPLATE_PATH = PROJECT_ROOT / "Template.xlsx"
+OUTPUT_PATH = PROJECT_ROOT / "Reports" / "Monthly_Report"
 
 SHEET_NAME = "Sheet1"
 START_ROW = 18
 START_COL = 2   # B = 2
 
-BASE_FOLDER = r"D:\Wassel\Reports\Monthly_Report"
+BASE_FOLDER = PROJECT_ROOT / "Reports" / "Monthly_Report"
 
 # === Helper functions ===
 def get_week_start(date):
