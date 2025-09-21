@@ -1,0 +1,8 @@
+- Task: Complete VPN tunnel setup between Becom and Masarat
+  Status: Completed
+- Task: Complete connection to Masarat API
+  Status: Completed
+- Task: Configure DNS record for Masarat API
+  Status: Completed
+- Task: Install SSL for the Masarat API
+  Status: Completed

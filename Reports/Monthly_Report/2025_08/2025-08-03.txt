@@ -1,0 +1,11 @@
+- Task: Configured NAS and mounted it on fawtara test and production environments
+  Status: Completed
+
+- Task: Purchased and configured becom.ly domain
+  Status: In Progress
+
+- Task: Configured SSL for the becom.ly domain
+  Status: In Progress
+
+- Task: Set up test environment to build a test production for fawtara project
+  Status: In Progress
