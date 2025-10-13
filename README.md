@@ -17,6 +17,40 @@ pip install openpyxl playsound
 - Optional: Ollama CLI and your chosen model (e.g. `mistral`) if you want AI summarization.
 - Ensure `Template.xlsx` exists in the project root.
 
+## Install Ollama (Windows)
+1. Visit the official install page and follow the Windows instructions:
+   - https://ollama.com/install
+
+2. Preferred simple methods:
+   - Download the Windows installer (MSI) from the official page and run it as Administrator.
+   - OR, if you use winget (Windows Package Manager), try:
+     ```powershell
+     winget install Ollama.Ollama
+     ```
+     (If winget package is unavailable on your system, use the installer from the website.)
+
+3. Verify installation:
+```powershell
+ollama --version
+```
+You should see version information. If that fails, ensure the Ollama install directory was added to your PATH and reopen the terminal.
+
+4. Download the model you plan to use (example uses `mistral`):
+```powershell
+ollama pull mistral
+```
+(If you prefer, `ollama run <model>` will often download the model on first use.)
+
+5. Quick test run:
+```powershell
+ollama run mistral
+```
+This should start a session using the model. Your `daily_task.py` uses `subprocess` to call `ollama run <MODEL_NAME>`.
+
+Notes:
+- Run the installer as Administrator on Windows if you encounter permission issues.
+- See `ollama --help` for more commands and troubleshooting.
+
 ## Project layout
 - d:\VC_project\AI_test\
   - daily_task.py
@@ -64,7 +98,7 @@ python d:\VC_project\AI_test\weekly_Report.py
 - ModuleNotFoundError: No module named 'pandas'  
   Comment out or remove any unused `import pandas as pd` lines since this project does not require pandas.
 
-- Ollama errors: ensure Ollama CLI is installed and the model name in `daily_task.py` is available.
+- Ollama errors: ensure Ollama CLI is installed and the model name in `daily_task.py` is available. Use `ollama pull <model>` to download the model before running the app.
 
 - Sound not playing: confirm `CUSTOM_SOUND` path is correct and `playsound` is installed; Windows fallback uses `winsound`.
 
