@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 # === CONFIG ===
-PROJECT_ROOT = Path(r"W:\VC_project\AI_test")
+PROJECT_ROOT = Path(r"D:\VC_project\AI_test")
 HOME = Path.home()
 DOCUMENTS = HOME / "Documents"
 
@@ -44,7 +44,7 @@ def analyze_tasks(user_text):
 You are a productivity assistant. The user will give you a messy list of work activities they did today. Your job is to extract and summarize each task clearly, and assign a status:
 
 - If the task seems completed (e.g. "fixed", "finished", "deployed", "helped"), mark it as "Completed".
-- If the task is ongoing, in progress, or uncertain (e.g. "working on", "planning", "starting"), mark it as "In Progress".
+- If the task is ongoing, in progress, or uncertain (e.g. "working on", "planning", "starting"), mark it as "In_Progress".
 
 Return the result in this exact format:
 

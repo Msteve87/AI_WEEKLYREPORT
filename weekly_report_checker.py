@@ -5,6 +5,7 @@ from pathlib import Path
 #BASE_FOLDER = r"D:\Wassel\Reports\Monthly_Report"
 #DAILY_TASK_SCRIPT = r"d:\VC_project\AI_test\daily_task.py"
 
+
 # === CONFIG ===
 PROJECT_ROOT = Path(r"W:\VC_project\AI_test")
 HOME = Path.home()
@@ -12,6 +13,8 @@ DOCUMENTS = HOME / "Documents"
 BASE_FOLDER = DOCUMENTS / "Reports" / "Monthly_Report"
 
 DAILY_TASK_SCRIPT = PROJECT_ROOT / "daily_task.py"
+WEEKLY_REPORT_SCRIPT = PROJECT_ROOT / "weekly_Report.py"
+# ==============
 
 def get_week_dates():
     today = datetime.today().date()
@@ -42,5 +45,7 @@ def main():
         print(f"Launching daily_task.py for {day}...")
         subprocess.run(["python", DAILY_TASK_SCRIPT, "--date", str(day)])
 
+    print("Launching weekly_Report.py...")
+    subprocess.run(["python", WEEKLY_REPORT_SCRIPT])
 if __name__ == "__main__":
     main()

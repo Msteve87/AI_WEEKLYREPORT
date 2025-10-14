@@ -8,16 +8,20 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from pathlib import Path
 # === CONFIG ===
 
-PROJECT_ROOT = Path(r"W:\VC_project\AI_test")
+PROJECT_ROOT = Path(r"D:\VC_project\AI_test")
 
+HOME = Path.home()
 TEMPLATE_PATH = PROJECT_ROOT / "Template.xlsx"
-OUTPUT_PATH = PROJECT_ROOT / "Reports" / "Monthly_Report"
+OUTPUT_PATH = HOME / "Documents" / "Reports" / "Monthly_Report"
+
+
 
 SHEET_NAME = "Sheet1"
 START_ROW = 18
 START_COL = 2   # B = 2
 
-BASE_FOLDER = PROJECT_ROOT / "Reports" / "Monthly_Report"
+BASE_FOLDER = HOME / "Documents" / "Reports" / "Monthly_Report"
+print(BASE_FOLDER)
 
 # === Helper functions ===
 def get_week_start(date):
