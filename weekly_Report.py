@@ -8,7 +8,8 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from pathlib import Path
 # === CONFIG ===
 
-PROJECT_ROOT = Path(r"D:\VC_project\AI_test")
+#PROJECT_ROOT = Path(r"D:\VC_project\AI_test")
+PROJECT_ROOT = Path(__file__).resolve().parent
 
 HOME = Path.home()
 TEMPLATE_PATH = PROJECT_ROOT / "Template.xlsx"
