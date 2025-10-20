@@ -7,7 +7,9 @@ from pathlib import Path
 
 
 # === CONFIG ===
-PROJECT_ROOT = Path(r"W:\VC_project\AI_test")
+#PROJECT_ROOT = Path(r"d:\VC_project\AI_test")
+PROJECT_ROOT = Path(__file__).resolve().parent
+
 HOME = Path.home()
 DOCUMENTS = HOME / "Documents"
 BASE_FOLDER = DOCUMENTS / "Reports" / "Monthly_Report"

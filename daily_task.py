@@ -10,7 +10,9 @@ import sys
 from pathlib import Path
 
 # === CONFIG ===
-PROJECT_ROOT = Path(r"D:\VC_project\AI_test")
+#PROJECT_ROOT = Path(r"D:\VC_project\AI_test")
+PROJECT_ROOT = Path(__file__).resolve().parent
+
 HOME = Path.home()
 DOCUMENTS = HOME / "Documents"
 

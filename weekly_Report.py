@@ -117,7 +117,7 @@ def generate_monthly_report():
     else:
         print(f"No tasks found for Week {week_number}. Skipping.")
 
-    year_month = datetime.today().strftime("%Y-%m")
+    year_month = datetime.today().strftime("%Y-%m-%d")
     filename = f"{year_month}_Report.xlsx"
     filepath = os.path.join(OUTPUT_PATH, filename)
 
