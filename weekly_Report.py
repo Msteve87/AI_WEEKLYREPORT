@@ -1,3 +1,5 @@
+from cProfile import label
+from logging import root
 import os
 import re
 #import pandas as pd
@@ -6,7 +8,22 @@ from openpyxl.styles import Font, PatternFill
 from datetime import datetime, timedelta
 from openpyxl.styles import Alignment, Font, PatternFill
 from pathlib import Path
+import sys
+import tkinter as tk
+from tkinter import messagebox
+import winsound
+
+from PIL import Image, ImageTk
+
 # === CONFIG ===
+
+# === CONFIG ===
+if getattr(sys, 'frozen', False):
+    # Running inside PyInstaller bundle
+    PROJECT_ROOT = Path(sys._MEIPASS)
+else:
+    # Running from source
+    PROJECT_ROOT = Path(__file__).resolve().parent
 
 #PROJECT_ROOT = Path(r"D:\VC_project\AI_test")
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -14,7 +31,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 HOME = Path.home()
 TEMPLATE_PATH = PROJECT_ROOT / "Template.xlsx"
 OUTPUT_PATH = HOME / "Documents" / "Reports" / "Monthly_Report"
-
+img_path = PROJECT_ROOT / "success.png"
 
 
 SHEET_NAME = "Sheet1"
@@ -124,6 +141,21 @@ def generate_monthly_report():
 
     wb.save(filepath)
 
+    root = tk.Tk()
+    root.title("Report Completed 🎉")
+    root.geometry("400x350")
+    root.configure(bg="#f0f0f0")
+    #root.withdraw()
+    winsound.MessageBeep(winsound.MB_ICONASTERISK)
+    img = Image.open(img_path)
+    #img = img.resize((150, 150))  # Optional resize
+    photo = ImageTk.PhotoImage(img)
+    #messagebox.showinfo("Weekly Report", "✅ Report generated successfully!")
+    label = tk.Label(root, text="Weekly Report Generated Successfully!", font=("Segoe UI", 12), bg="#f0f0f0")
+    label.pack(pady=10)
+    tk.Label(root, image=photo, bg="#f0f0f0").pack(pady=10)
+    tk.Button(root, text="Close", command=root.destroy, width=10).pack(pady=10)
+    root.mainloop()
 
     print(f"Report saved as: {filepath}")
 

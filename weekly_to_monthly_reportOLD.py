@@ -1,91 +1,86 @@
+import sys
+import subprocess
+import time
 import os
-import re
-import pandas as pd
 from datetime import datetime, timedelta
-from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.styles import Font
-from openpyxl import load_workbook
+from pathlib import Path
+import tkinter as tk
+from tkinter import messagebox
+import winsound
 
-# === CONFIG ===
-BASE_FOLDER = r"D:\Wassel\Reports\Monthly_Report"
+# === PATH CONFIG ===
+if getattr(sys, 'frozen', False):
+    PROJECT_ROOT = Path(sys.executable).resolve().parent
+else:
+    PROJECT_ROOT = Path(__file__).resolve().parent
 
-def get_week_start(date):
-    days_since_sunday = (date.isoweekday() % 7)
-    return date - timedelta(days=days_since_sunday)
+HOME = Path.home()
+DOCUMENTS = HOME / "Documents"
+BASE_FOLDER = DOCUMENTS / "Reports" / "Monthly_Report"
 
-def get_week_dates(week_start):
-    return [week_start + timedelta(days=i) for i in range(5)]  # Sun to Thu
+DAILY_TASK_EXE = PROJECT_ROOT  / "daily_task.exe"
+WEEKLY_REPORT_EXE = PROJECT_ROOT  / "weekly_Report.exe"
 
-def parse_daily_file(file_path):
-    tasks = []
-    with open(file_path, encoding='utf-8') as f:
-        content = f.read()
+WAIT_TIMEOUT = 60  # 1 minute max wait
+# ====================
 
-    matches = re.findall(r"- Task:\s*(.*?)\s*Status:\s*(\w+)", content, re.DOTALL)
-    for task, status in matches:
-        tasks.append({"Date": None, "Task": task.strip(), "Status": status.strip()})
-    return tasks
-
-def generate_monthly_report():
+def get_week_dates():
     today = datetime.today().date()
-    month_str = f"{today.year}_{today.month:02d}"
-    excel_file = os.path.join(BASE_FOLDER, f"Monthly_Report_{month_str}.xlsx")
+    # Sunday as start
+    days_since_sunday = (today.weekday() + 1) % 7
+    start = today - timedelta(days=days_since_sunday)
+    return [start + timedelta(days=i) for i in range(5)]  # Sun–Thu
 
-    # We'll gather tasks grouped by week number
-    all_data = []
-
-    # For simplicity, we get all weeks from 1 to max weeks in month
-    # Or just for the current week (modify as needed)
-    # Here, as example, just current week:
-    current_week_start = get_week_start(today)
-    week_dates = get_week_dates(current_week_start)
-
-    # Assign a fake week number, e.g. 1 for current week (extend for multiple weeks as needed)
-    week_number = 1
-
-    weekly_tasks = []
+def check_missing_days():
+    week_dates = get_week_dates()
+    folder_name = f"{week_dates[0].year}_{week_dates[0].month:02d}"
+    folder_path = BASE_FOLDER / folder_name
+    missing = []
     for day in week_dates:
-        folder_name = f"{day.year}_{day.month:02d}"
-        folder_path = os.path.join(BASE_FOLDER, folder_name)
-        file_name = f"{day}.txt"
-        file_path = os.path.join(folder_path, file_name)
+        file_path = folder_path / f"{day}.txt"
+        if not file_path.exists():
+            missing.append(day)
+    return missing
 
-        if os.path.exists(file_path):
-            tasks = parse_daily_file(file_path)
-            # Add date info per task
-            for t in tasks:
-                t["Date"] = day.isoformat()
-            weekly_tasks.extend(tasks)
+def run_daily_task_for_day(day):
+    report_folder = BASE_FOLDER / f"{day.year}_{day.month:02d}"
+    report_file = report_folder / f"{day}.txt"
 
-    if not weekly_tasks:
-        print("No tasks found for this week.")
-        return
+    print(f"📝 Launching daily_task.exe for {day}...")
+    subprocess.run([str(DAILY_TASK_EXE), "--date", str(day)])
+    
+    print("⏳ Waiting for report to be saved...")
+    for _ in range(WAIT_TIMEOUT):
+        if report_file.exists():
+            print(f"✅ Report for {day} saved!")
+            return True
+        time.sleep(1)
 
-    # Insert a "Week X" row at the start
-    all_data.append({"Date": "", "Task": f"Week {week_number}", "Status": ""})
+    print(f"⚠️ Timeout: Report for {day} not found.")
+    return False
 
-    # Append all tasks of this week
-    all_data.extend(weekly_tasks)
+def main():
+    print("🔍 Checking weekly reports...")
+    missing_days = check_missing_days()
 
-    # Convert to DataFrame
-    df = pd.DataFrame(all_data)
+    if not missing_days:
+        print("✅ All daily reports exist. Generating weekly report...")
+    else:
+        print("📅 Missing reports:", ", ".join(str(d) for d in missing_days))
+        for day in missing_days:
+            run_daily_task_for_day(day)
 
-    # If Excel exists, load old data and append, but here for simplicity just overwrite
-    df.to_excel(excel_file, index=False)
+    # === Run weekly report ===
+    print("📊 Generating weekly report...")
+    subprocess.run([str(WEEKLY_REPORT_EXE)])
 
-    # Now open Excel with openpyxl to bold Week rows
-    wb = load_workbook(excel_file)
-    ws = wb.active
-
-    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-        cell_task = row[1]  # Task column is second column (B)
-        if cell_task.value and str(cell_task.value).startswith("Week "):
-            for cell in row:
-                cell.font = Font(bold=True)
-
-    wb.save(excel_file)
-
-    print(f"Report saved with week headers: {excel_file}")
+    # === Popup & Sound ===
+    winsound.MessageBeep(winsound.MB_ICONASTERISK)
+    root = tk.Tk()
+    root.withdraw()
+    messagebox.showinfo("Weekly Checker", "🎉 Weekly process completed successfully!")
 
 if __name__ == "__main__":
-    generate_monthly_report()
+    main()
+    time.sleep(1)  # short grace period
+    os._exit(0)    # forcefully terminate this process (skips lingering Tk threads)
