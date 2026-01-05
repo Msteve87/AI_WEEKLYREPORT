@@ -5,7 +5,7 @@ a = Analysis(
     ['daily_task.py'],
     pathex=[],
     binaries=[],
-    datas=[('among-us-roundstart.mp3', '.')],
+    datas=[('report_bobdyfound_1.mp3', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

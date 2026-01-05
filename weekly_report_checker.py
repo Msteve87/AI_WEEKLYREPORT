@@ -14,7 +14,17 @@ import winsound
 
 # === CONFIG ===
 #PROJECT_ROOT = Path(r"d:\VC_project\AI_test")
-PROJECT_ROOT = Path(__file__).resolve().parent
+# === CONFIG ===
+if getattr(sys, 'frozen', False):
+    # Running as compiled exe
+    PROJECT_ROOT = Path(sys.executable).parent
+    DAILY_TASK_EXE = PROJECT_ROOT / "daily_task.exe"
+    WEEKLY_REPORT_EXE = PROJECT_ROOT / "weekly_Report.exe"
+else:
+    # Running as script
+    PROJECT_ROOT = Path(__file__).resolve().parent
+    DAILY_TASK_EXE = PROJECT_ROOT / "dist" / "daily_task.exe"
+    WEEKLY_REPORT_EXE = PROJECT_ROOT / "dist" / "weekly_Report.exe"
 
 HOME = Path.home()
 DOCUMENTS = HOME / "Documents"
@@ -22,9 +32,6 @@ BASE_FOLDER = DOCUMENTS / "Reports" / "Monthly_Report"
 
 DAILY_TASK_SCRIPT = PROJECT_ROOT / "daily_task.py"
 WEEKLY_REPORT_SCRIPT = PROJECT_ROOT / "weekly_Report.py"
-
-DAILY_TASK_EXE = PROJECT_ROOT / "dist" / "daily_task.exe"
-WEEKLY_REPORT_EXE = PROJECT_ROOT / "dist" / "weekly_Report.exe"
 WAIT_TIMEOUT = 300  # seconds to wait for report file (5 minutes)
 # ==============
 

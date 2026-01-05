@@ -8,6 +8,8 @@ from playsound import playsound
 import threading
 import sys
 from pathlib import Path
+from tkinter import font
+
 
 # === CONFIG ===
 #PROJECT_ROOT = Path(r"D:\VC_project\AI_test")
@@ -25,7 +27,19 @@ BASE_FOLDER.mkdir(parents=True, exist_ok=True)
 MODEL_NAME = "mistral"
 
 #CUSTOM_SOUND = r"D:\VC_project\AI_test\among-us-roundstart.mp3"
-CUSTOM_SOUND = PROJECT_ROOT / "among-us-roundstart.mp3"
+#CUSTOM_SOUND = PROJECT_ROOT / "among-us-roundstart.mp3"
+
+import sys
+from pathlib import Path
+
+# Detect correct path (works in .py and .exe)
+if getattr(sys, 'frozen', False):
+    PROJECT_ROOT = Path(sys._MEIPASS)
+else:
+    PROJECT_ROOT = Path(__file__).resolve().parent
+
+CUSTOM_SOUND = PROJECT_ROOT / "report_bobdyfound_1.mp3"
+
 
 # Example:
 # CUSTOM_SOUND = r"C:\path\to\sound.wav"
@@ -126,16 +140,41 @@ def play_startup_sound():
 root = tk.Tk()
 root.title(f"Daily Task Entry - {selected_date}")
 
+unicode_font = ("Arial", 12)   # or ("Tahoma", 12) for better Arabic rendering
 # Play sound right when app starts
 play_startup_sound()
+
+
 
 label = tk.Label(root, text=f"What did you do on {selected_date}? (List or paragraph is fine)")
 label.pack(padx=10, pady=10)
 
-text_entry = tk.Text(root, width=60, height=15)
+text_entry = tk.Text(root, width=90, height=20, font=unicode_font, autoseparators=True,maxundo=-1)
 text_entry.pack(padx=10, pady=10)
 
-generate_btn = tk.Button(root, text="Generate Summary", command=generate_summary)
+
+def force_unicode_paste(event=None):
+    try:
+        # Get raw clipboard text as Unicode
+        data = root.clipboard_get()
+        
+        # Insert manually
+        text_entry.insert("insert", data)
+
+    except Exception as e:
+        print("Paste error:", e)
+
+    return "break"   # IMPORTANT: stop Tkinter's default behavior
+
+
+text_entry.bind("<Control-v>", force_unicode_paste)
+text_entry.bind("<Control-V>", force_unicode_paste)
+text_entry.bind("<Shift-Insert>", force_unicode_paste)
+text_entry.bind("<<Paste>>", force_unicode_paste)
+
+
+generate_btn = tk.Button(root, text="Generate Summary", command=generate_summary , width=30)
 generate_btn.pack(padx=10, pady=10)
 
 root.mainloop()
+os._exit(0)

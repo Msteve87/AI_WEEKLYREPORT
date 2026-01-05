@@ -18,10 +18,20 @@ HOME = Path.home()
 DOCUMENTS = HOME / "Documents"
 BASE_FOLDER = DOCUMENTS / "Reports" / "Monthly_Report"
 
-DAILY_TASK_EXE = PROJECT_ROOT  / "daily_task.exe"
-WEEKLY_REPORT_EXE = PROJECT_ROOT  / "weekly_Report.exe"
 
-WAIT_TIMEOUT = 60  # 1 minute max wait
+# DAILY_TASK_EXE = PROJECT_ROOT  / "daily_task.exe"
+# WEEKLY_REPORT_EXE = PROJECT_ROOT  / "weekly_Report.exe"
+DAILY_TASK_EXE = (PROJECT_ROOT / ".." / "daily_task" / "daily_task.exe").resolve()
+WEEKLY_REPORT_EXE = (PROJECT_ROOT / ".." / "weekly_Report" / "weekly_Report.exe").resolve()
+
+
+DIST_ROOT = PROJECT_ROOT.parent
+
+# ✅ Corrected paths
+DAILY_TASK_EXE = (DIST_ROOT / "daily_task" / "daily_task.exe").resolve()
+WEEKLY_REPORT_EXE = (DIST_ROOT / "weekly_Report" / "weekly_Report.exe").resolve()
+
+WAIT_TIMEOUT = 1  # 1 minute max wait
 # ====================
 
 def get_week_dates():
@@ -46,6 +56,7 @@ def run_daily_task_for_day(day):
     report_folder = BASE_FOLDER / f"{day.year}_{day.month:02d}"
     report_file = report_folder / f"{day}.txt"
 
+    
     print(f"📝 Launching daily_task.exe for {day}...")
     subprocess.run([str(DAILY_TASK_EXE), "--date", str(day)])
     
@@ -72,6 +83,9 @@ def main():
 
     # === Run weekly report ===
     print("📊 Generating weekly report...")
+    print("DAILY_TASK_EXE =", DAILY_TASK_EXE, "exists?", DAILY_TASK_EXE.exists())
+    print("WEEKLY_REPORT_EXE =", WEEKLY_REPORT_EXE, "exists?", WEEKLY_REPORT_EXE.exists())
+
     subprocess.run([str(WEEKLY_REPORT_EXE)])
 
     # === Popup & Sound ===
