@@ -59,8 +59,11 @@ def parse_daily_file(file_path):
         tasks.append({"Date": None, "Task": task.strip(), "Status": status.strip()})
     return tasks
 
-def generate_monthly_report():
-    today = datetime.today().date()
+def generate_monthly_report(target_date=None):
+    if target_date:
+        today = datetime.strptime(target_date, "%Y-%m-%d").date()
+    else:
+        today = datetime.today().date()
 
     month_str = f"{today.year}_{today.month:02d}"
 
@@ -135,8 +138,9 @@ def generate_monthly_report():
     else:
         print(f"No tasks found for Week {week_number}. Skipping.")
 
-    year_month = datetime.today().strftime("%Y-%m-%d")
-    filename = f"{year_month}_Report.xlsx"
+    # Use the last day of the work week (Thursday) for filename
+    end_of_week = week_dates[-1].strftime("%Y-%m-%d")
+    filename = f"{end_of_week}_Report.xlsx"
     filepath = os.path.join(OUTPUT_PATH, filename)
 
     wb.save(filepath)
@@ -170,4 +174,8 @@ def get_week_number_in_month(date):
     return week_number
 
 if __name__ == "__main__":
-    generate_monthly_report()
+    if len(sys.argv) > 1:
+        target_date = sys.argv[1]
+        generate_monthly_report(target_date)
+    else:
+        generate_monthly_report()
