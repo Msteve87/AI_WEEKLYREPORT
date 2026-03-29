@@ -32,7 +32,7 @@ BASE_FOLDER = DOCUMENTS / "Reports" / "Monthly_Report"
 
 DAILY_TASK_SCRIPT = PROJECT_ROOT / "daily_task.py"
 WEEKLY_REPORT_SCRIPT = PROJECT_ROOT / "weekly_Report.py"
-WAIT_TIMEOUT = 300  # seconds to wait for report file (5 minutes)
+WAIT_TIMEOUT = 10  # seconds to wait for report file (5 minutes)
 # ==============
 
 def get_week_dates(target_date=None):

@@ -173,9 +173,19 @@ def get_week_number_in_month(date):
     week_number = ((date - first_sunday).days // 7) + 1
     return week_number
 
+import argparse
+
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        target_date = sys.argv[1]
+    parser = argparse.ArgumentParser(description="Generate Weekly Report")
+    parser.add_argument("--date", type=str, help="Target date in YYYY-MM-DD format")
+    args, unknown = parser.parse_known_args()
+    
+    target_date = args.date
+    # Allow the user to also pass just the date without --date for backward compatibility
+    if target_date is None and unknown and not unknown[0].startswith('--'):
+        target_date = unknown[0]
+        
+    if target_date:
         generate_monthly_report(target_date)
     else:
         generate_monthly_report()
