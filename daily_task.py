@@ -123,7 +123,7 @@ def load_git_commits():
                 if len(parts) >= 6:
                     repo = parts[2]
                     msg = parts[5]
-                    commit_list.append(f"Repo : {repo}\nCommit : {msg}")
+                    commit_list.append(f"- Task: Repo: {repo}\n  Commit: {msg}\n  Status: Completed")
             
             if commit_list:
                 text_entry.insert("1.0", "\n\n".join(commit_list) + "\n")

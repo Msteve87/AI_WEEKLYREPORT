@@ -42,16 +42,32 @@ def get_week_start(date):
     return date - timedelta(days=days_since_sunday)
 
 def get_week_dates(week_start):
-    return [week_start + timedelta(days=i) for i in range(1, 6)]
+    # Returns the whole week (Sunday to Saturday, 0 to 6 days from Sunday)
+    return [week_start + timedelta(days=i) for i in range(0, 7)]
 
 def parse_daily_file(file_path):
     tasks = []
     with open(file_path, encoding='utf-8') as f:
         content = f.read()
 
+    # Original regex for standard tasks
     matches = re.findall(r"- Task:\s*(.*?)\s*Status:\s*(\w+)", content, re.DOTALL)
-    for task, status in matches:
-        tasks.append({"Date": None, "Task": task.strip(), "Status": status.strip()})
+    for task_text, status in matches:
+        task_text = task_text.strip()
+        # Separate Repo and Commit if this is a git log format
+        if "\n  Commit:" in task_text or "\nCommit:" in task_text:
+            parts = re.split(r"\n\s*Commit:\s*", task_text, maxsplit=1)
+            tasks.append({"Date": None, "Task": parts[0].strip(), "Commit": parts[1].strip(), "Status": status.strip()})
+        else:
+            tasks.append({"Date": None, "Task": task_text, "Commit": None, "Status": status.strip()})
+    
+    # New regex for Git commits format (Only if at start of line to avoid duplicates)
+    # This matches the legacy format (Repo : ..., Commit : ...)
+    # (?m)^ ensures it only matches if it's the start of a line
+    git_matches = re.findall(r"(?m)^Repo\s*:\s*(.*?)\s*Commit\s*:\s*(.*)", content)
+    for repo, msg in git_matches:
+        tasks.append({"Date": None, "Task": f"Repo: {repo.strip()}", "Commit": msg.strip(), "Status": "Completed"})
+        
     return tasks
 
 def generate_monthly_report(target_date=None):
@@ -105,7 +121,7 @@ def generate_monthly_report(target_date=None):
     if weekly_tasks:
         # merge + write Week header once
         merge_start = START_COL
-        merge_end = START_COL + 2 # Merge B to E
+        merge_end = START_COL + 3 # Merge B to E
 
         ws.merge_cells(
             start_row=next_row,
@@ -129,6 +145,8 @@ def generate_monthly_report(target_date=None):
             ws.cell(row=next_row, column=START_COL, value=task["Date"])
             ws.cell(row=next_row, column=START_COL + 1, value=task["Task"])
             ws.cell(row=next_row, column=START_COL + 2, value=task["Status"])
+            if task.get("Commit"):
+                ws.cell(row=next_row, column=START_COL + 3, value=task["Commit"]) # Column E
             next_row += 1
     else:
         print(f"No tasks found for Week {week_number}. Skipping.")
