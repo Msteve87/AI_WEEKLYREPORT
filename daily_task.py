@@ -122,7 +122,8 @@ def load_git_commits():
                 parts = line.split(" | ")
                 if len(parts) >= 6:
                     repo = parts[2]
-                    msg = parts[5]
+                    msg_encoded = " | ".join(parts[5:])
+                    msg = msg_encoded.replace("[NEWLINE]", "\n    ")
                     commit_list.append(f"- Task: Repo: {repo}\n  Commit: {msg}\n  Status: Completed")
             
             if commit_list:

@@ -46,8 +46,8 @@ def main():
         target_date = sys.argv[2]
         try:
             user_name = run_git(["config", "user.name"])
-            # Format: SHA|Time|Subject
-            log_format = "%H|%ad|%s"
+            # Format: SHA|Time|RawBody + custom delimiter
+            log_format = "%H|%ad|%B======END_COMMIT======"
             commits_raw = run_git([
                 "log",
                 f"--author={user_name}",
@@ -60,10 +60,12 @@ def main():
             if not commits_raw:
                 return
 
-            for commit_line in commits_raw.split("\n"):
-                if not commit_line:
+            for commit_block in commits_raw.split("======END_COMMIT======"):
+                commit_block = commit_block.strip()
+                if not commit_block:
                     continue
-                sha_full, commit_time, msg = commit_line.split("|", 2)
+                sha_full, commit_time, msg = commit_block.split("|", 2)
+                msg = msg.strip().replace("\n", "[NEWLINE]")
                 log_to_file(target_date, commit_time, host, repo_name, branch, sha_full[:7], msg)
         except Exception:
             return
@@ -71,7 +73,7 @@ def main():
         # Default behavior: log current HEAD
         try:
             sha = run_git(["rev-parse", "--short", "HEAD"])
-            msg = run_git(["log", "-1", "--pretty=%s"])
+            msg = run_git(["log", "-1", "--pretty=%B"]).strip().replace("\n", "[NEWLINE]")
             now = datetime.now()
             date_str = now.strftime("%Y-%m-%d")
             time_str = now.strftime("%H:%M:%S")

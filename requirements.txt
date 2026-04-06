@@ -1,0 +1,3 @@
+openpyxl
+Pillow
+playsound==1.2.2
